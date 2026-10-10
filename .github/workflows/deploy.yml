@@ -1,15 +1,15 @@
 name: DevSecOps Pipeline — End to End
-
+ 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
-
+ 
 permissions:
   contents: read
   security-events: write
   actions: read
-
+ 
 jobs:
   codeql-analysis:
     name: Análisis Estático (CodeQL)
@@ -21,7 +21,7 @@ jobs:
         with:
           languages: javascript
       - uses: github/codeql-action/analyze@v3
-
+ 
   gitleaks-scan:
     name: Detección de Secretos (Gitleaks)
     runs-on: ubuntu-latest
@@ -33,7 +33,7 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+ 
   trivy-scan:
     name: Escaneo de Vulnerabilidades (Trivy)
     runs-on: ubuntu-latest
@@ -42,12 +42,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: aquasecurity/trivy-action@master
         with:
-          scan-type: "fs"
-          scan-ref: "."
-          format: "sarif"
-          output: "trivy-fs-report.sarif"
-          severity: "CRITICAL,HIGH"
-
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-fs-report.sarif'
+          severity: 'CRITICAL,HIGH'
+ 
   generate-sbom:
     name: Generación de SBOM
     runs-on: ubuntu-latest
@@ -63,7 +63,7 @@ jobs:
         with:
           name: sbom-report
           path: sbom.cyclonedx.json
-
+ 
   security-gate:
     name: Política de Seguridad (Quality Gate)
     runs-on: ubuntu-latest
@@ -72,12 +72,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: aquasecurity/trivy-action@master
         with:
-          scan-type: "fs"
-          scan-ref: "."
-          severity: "CRITICAL"
-          exit-code: "1"
+          scan-type: 'fs'
+          scan-ref: '.'
+          severity: 'CRITICAL'
+          exit-code: '1'
           ignore-unfixed: true
-
+ 
   sonarqube-scan:
     name: Análisis de Calidad (SonarQube)
     runs-on: ubuntu-latest
@@ -95,7 +95,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
+ 
   terraform-deploy:
     name: Despliegue de Infraestructura (Terraform)
     runs-on: ubuntu-latest
@@ -112,7 +112,7 @@ jobs:
         working-directory: ./infra
       - run: terraform apply -auto-approve -var="bucket_name=${{ secrets.BUCKET_NAME }}"
         working-directory: ./infra
-
+ 
   terraform-destroy:
     name: Destruir Infraestructura (Limpieza manual)
     runs-on: ubuntu-latest

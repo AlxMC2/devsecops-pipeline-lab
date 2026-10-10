@@ -6,4 +6,5 @@ variable "aws_region" {
 variable "bucket_name" {
   description = "Nombre único global del bucket S3"
   type        = string
+  default = "devsecops-lab-chamul-2026"
 }
